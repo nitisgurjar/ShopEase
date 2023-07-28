@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Request,status,Depends,Form
 from.models import *
-from . pydantic import User,Token,Login
+from . pydantic import User,Token,Login,Info,Update
 from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
@@ -31,48 +31,49 @@ def get_password_hash(password):
 
 @app.post('/')
 async def register(data:User):
-    if await Student.exists(phone=data.phone):
+    if await Userr.exists(phone=data.phone):
         return{"status":False,"message":"mobile number already exist"}
-    elif await Student.exists(email=data.email):
+    elif await Userr.exists(email=data.email):
         return{"status":False,"message":"email already exist"}
     else:
-        user_obj=await Student.create(name=data.name,email=data.email,phone=data.phone,password=get_password_hash(data.password),shopname=data.shopname,
+        user_obj=await Userr.create(name=data.name,email=data.email,phone=data.phone,password=get_password_hash(data.password),shopname=data.shopname,
                                       gst=data.gst,is_active=data.is_active,last_login=data.last_login,created_at=data.created_at,updated_at=data.updated_at)
         return user_obj
     
 
-# @app.get('/all/')
-# async def all():
-#     user_obj=await Student.all()
-#     return user_obj
+@app.get('/all/')
+async def all():
+    user_obj=await Userr.all()
+    return user_obj
 
 
-# @app.post('/daata/')
-# async def daata(data:Datta):
-#     user_obj = await Student.filter(id=data.id)
-#     return user_obj
+@app.post('/daata/')
+async def daata(data:Info):
+    user_obj = await Userr.filter(id=data.id)
+    return user_obj
 
 
-# @app.delete('/delete/')
-# async def delete(data:Datta):
-#     user_obj= await Student.filter(id=data.id).delete()
-#     return {"message":"user deleted"}
+@app.delete('/delete/')
+async def delete(data:Info):
+    user_obj= await Userr.filter(id=data.id).delete()
+    return {"message":"user deleted"}
 
 
-# @app.put('/update/')
-# async def update(data:Update):
-#     user_obj= await Student.get(id=data.id)
-#     if not user_obj:
-#         return{"status":False,"message":"user not register"}
-#     else:
-#         user_obj=await Student.filter(id=data.id).update(name=data.name,email=data.email,phone=data.phone)
-#         return user_obj
+@app.put('/update/')
+async def update(data:Update):
+    user_obj= await Userr.get(id=data.id)
+    if not user_obj:
+        return{"status":False,"message":"user not register"}
+    else:
+        user_obj=await Userr.filter(id=data.id).update(name=data.name,email=data.email,phone=data.phone,
+                                                       shopname=data.shopname,updated_at=data.updated_at,gst=data.gst)
+        return user_obj
 
 
 @manager.user_loader() # type: ignore
 async def load_user(email: str):
-    if await Student.exists(email=email):
-        user = await Student.get(email=email)
+    if await Userr.exists(email=email):
+        user = await Userr.get(email=email)
         return user
 
 @app.post('/login/')

@@ -2,7 +2,7 @@ from tortoise.models import Model
 from tortoise import Tortoise,fields
 
 
-class Student(Model):
+class Userr(Model):
     id=fields.IntField(pk=True)
     name=fields.CharField(100)
     email=fields.CharField(100)
