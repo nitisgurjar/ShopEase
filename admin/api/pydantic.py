@@ -14,3 +14,11 @@ class User(BaseModel):
     last_login: datetime
     created_at: datetime
     updated_at: datetime
+
+class Login(BaseModel):
+    email : str
+    password : str
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str = "bearer"

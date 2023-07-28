@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Request,status,Depends,Form
 from.models import *
-from . pydantic import User
+from . pydantic import User,Token,Login
 from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
@@ -69,22 +69,22 @@ async def register(data:User):
 #         return user_obj
 
 
-# @manager.user_loader() # type: ignore
-# async def load_user(email: str):
-#     if await Student.exists(email=email):
-#         user = await Student.get(email=email)
-#         return user
+@manager.user_loader() # type: ignore
+async def load_user(email: str):
+    if await Student.exists(email=email):
+        user = await Student.get(email=email)
+        return user
 
-# @app.post('/login/')
-# async def login(data: Login):
-#     email = data.email
-#     user = await load_user(email)
+@app.post('/login/')
+async def login(data: Login):
+    email = data.email
+    user = await load_user(email)
  
-#     if not user:
-#         return JSONResponse({'status': False, 'message': 'User not Registered'}, status_code=403)
-#     elif not verify_password(data.password, user.password):
-#         return JSONResponse({'status': False, 'message': 'Invalid password'}, status_code=403)
-#     access_token = manager.create_access_token(data={'sub': {'id': user.id}})
-#     new_dict = jsonable_encoder(user)
-#     new_dict.update({'access_token': access_token})
-#     return Token(access_token=access_token, token_type='bearer')
+    if not user:
+        return JSONResponse({'status': False, 'message': 'User not Registered'}, status_code=403)
+    elif not verify_password(data.password, user.password):
+        return JSONResponse({'status': False, 'message': 'Invalid password'}, status_code=403)
+    access_token = manager.create_access_token(data={'sub': {'id': user.id}})
+    new_dict = jsonable_encoder(user)
+    new_dict.update({'access_token': access_token})
+    return Token(access_token=access_token, token_type='bearer')
