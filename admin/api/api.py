@@ -37,7 +37,7 @@ async def register(data:User):
         return{"status":False,"message":"email already exist"}
     else:
         user_obj=await Userr.create(name=data.name,email=data.email,phone=data.phone,password=get_password_hash(data.password),shopname=data.shopname,
-                                      gst=data.gst,is_active=data.is_active,last_login=data.last_login,created_at=data.created_at,updated_at=data.updated_at)
+                                      gst=data.gst,)
         return user_obj
     
 
@@ -66,7 +66,7 @@ async def update(data:Update):
         return{"status":False,"message":"user not register"}
     else:
         user_obj=await Userr.filter(id=data.id).update(name=data.name,email=data.email,phone=data.phone,
-                                                       shopname=data.shopname,updated_at=data.updated_at,gst=data.gst)
+                                                       shopname=data.shopname,gst=data.gst)
         return user_obj
 
 

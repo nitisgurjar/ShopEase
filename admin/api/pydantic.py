@@ -9,10 +9,7 @@ class User(BaseModel):
     password:str
     shopname:str
     gst:int
-    is_active: bool = True
-    last_login: datetime
-    created_at: datetime
-    updated_at: datetime
+   
 
 class Login(BaseModel):
     email : str
@@ -32,4 +29,3 @@ class Update(BaseModel):
     phone:str
     shopname:str
     gst:int
-    updated_at: datetime

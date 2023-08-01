@@ -16,5 +16,17 @@ class Userr(Model):
     updated_at = fields.DatetimeField(auto_now=True)
 
 
+class Category(Model):
+    id=fields.IntField(pk=True)
+    name=fields.CharField(200,unique=True)
+    slug=fields.CharField(200)
+    category_image=fields.TextField()
+    description=fields.TextField()
+    is_activate=fields.BooleanField(default=True)
+    updated_at = fields.DatetimeField(auto_now=True)
+    created_at = fields.DatetimeField(auto_now_add=True)
+
+
+
 
 Tortoise.init_models(['api.models'],'models')
