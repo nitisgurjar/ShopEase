@@ -1,5 +1,4 @@
 from pydantic import BaseModel
-from datetime import datetime
 
 
 class User(BaseModel):
@@ -29,3 +28,25 @@ class Update(BaseModel):
     phone:str
     shopname:str
     gst:int
+
+class categoryitem(BaseModel):
+    name:str
+    description:str
+
+
+class Catupdate(BaseModel):
+    id:int
+    name:str
+    description:str
+
+class Subcategoryitem(BaseModel):
+    category_id:int
+    name:str
+    description:str
+
+class Branddetail(BaseModel):
+    brand_name:str
+
+class Updatebrand(BaseModel):
+    id:int
+    brand_name:str
