@@ -50,3 +50,31 @@ class Branddetail(BaseModel):
 class Updatebrand(BaseModel):
     id:int
     brand_name:str
+
+
+class Productdetail(BaseModel):
+    category_id:int
+    subcategory_id:int
+    addbrand_id:int
+    name:str
+    manufacturer_sku:str
+    product_code:int
+    model_n:str
+    description :str
+    mrp:int
+    base_price :int
+    gst :int
+    offer_price:int
+
+
+class UpdateProduct(BaseModel):
+    id:int
+    name:str
+    manufacturer_sku:str
+    product_code:int
+    model_no:str
+    description :str
+    mrp:int
+    base_price :int
+    gst :int
+    offer_price:int

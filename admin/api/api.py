@@ -1,6 +1,6 @@
 from fastapi import APIRouter,Request,status,Depends,Form,UploadFile,File
 from . models import *
-from . pydantic import User,Token,Login,Info,Update,categoryitem,Catupdate,Subcategoryitem,Branddetail,Updatebrand
+from . pydantic import User,Token,Login,Info,Update,categoryitem,Catupdate,Subcategoryitem,Branddetail,Updatebrand,Productdetail,UpdateProduct
 from fastapi.responses import JSONResponse
 from passlib.context import CryptContext
 from fastapi_login import LoginManager
@@ -8,8 +8,8 @@ from fastapi_login.exceptions import InvalidCredentialsException
 from fastapi.encoders import jsonable_encoder
 from passlib.context import CryptContext
 from json import JSONEncoder
-import typing
-import passlib
+# import typing
+# import passlib
 from slugify import slugify
 import os
 from datetime import datetime,timedelta
@@ -274,3 +274,125 @@ async def update_brand(data:Updatebrand):
     else:
         brand_obj=await AddBrand.filter(id=data.id).update(brand_name=data.brand_name)
         return brand_obj
+    
+
+
+
+
+# @app.post("/add_product/")
+# async def add_product(data: Productdetail = Depends(), product_image: UploadFile = File(...)):
+#     if await Category.exists(id=data.category_id):
+#         catogry_obj = await Category.get(id=data.category_id)
+#     if await SubCategoryy.exists(id=data.subcategory_id):
+#       subcategory_obj=await SubCategoryy.get(id=data.subcategory_id)
+#     if await AddBrand.exists(id=data.addbrand_id):
+#       brand_obj=await AddBrand.get(id=data.addbrand_id)
+#       if await Product.exists(name=data.name):
+#             return {"status": False, "message": "product name already Exist"}
+            
+#       else:
+#             slug = slugify(data.name)
+#             # print(slug)
+#             FILEPATH = "static/images/product/"
+
+#             if not os.path.isdir(FILEPATH):
+#                 os.makedirs(FILEPATH)
+
+#             filename = product_image.filename
+#             extension = filename.split(".")[1]
+#             imagename = filename.split(".")[0]
+
+#             if extension not in ["png", "jpg", "jpeg"]:
+#                 return {"status": "error", "detials": "file Extension not allowed"}
+
+#             dt = datetime.now()
+#             dt_timestamp = round(datetime.timestamp(dt))
+
+#             modified_image_name = imagename+"-"+str(dt_timestamp)+"."+extension
+#             genrated_name = FILEPATH + modified_image_name
+#             file_content = await product_image.read()
+
+#             with open(genrated_name, "wb") as file:
+#                 file.write(file_content)
+#                 file.closed
+
+#             cateory_obj = await Product.create(
+#             category=catogry_obj,
+#             subcategory_image=genrated_name,
+#             description=data.description,
+#             name=data.name,
+#             slug=slug
+#         )
+#             return product_obj
+
+@app.post('/addproduct/')
+async def addproduct(data:Productdetail=Depends(),product_image:UploadFile=File(...)):
+      if await Category.exists(id=data.category_id):
+        catogry_obj = await Category.get(id=data.category_id)
+   
+      if await SubCategoryy.exists(id=data.subcategory_id):
+         sub_obj = await SubCategoryy.get(id=data.subcategory_id)
+
+      if await AddBrand.exists(id=data.addbrand_id):
+        brand_obj=await AddBrand.get(id=data.addbrand_id)
+
+        if await Product.exists(name=data.name):
+            return{'message':'Product Already '}
+        else:      
+            FILEPATH = "static/images/productimg/"
+
+            if not os.path.isdir(FILEPATH):
+                os.mkdir(FILEPATH)
+
+            filename = product_image.filename
+            extension = filename.split(".")[1]
+            imagename = filename.split(".")[0]
+
+            if extension not in ["png", "jpg", "jpeg"]:
+                return {"status": "error", "detials": "file Extension not allowed"}
+
+            dt = datetime.now()
+            dt_timestamp = round(datetime.timestamp(dt))
+
+            modified_image_name = imagename+"-"+str(dt_timestamp)+"."+extension
+            genrated_name = FILEPATH + modified_image_name
+            file_content = await product_image.read()
+
+            with open(genrated_name, "wb") as file:
+                file.write(file_content)
+                file.closed    
+
+
+
+            pro_obj=await Product.create(name=data.name,manufacturer_sku=data.manufacturer_sku,
+                                         category=catogry_obj,subcategory=sub_obj,
+                                         addbrand=brand_obj,product_image=genrated_name,
+                                            product_code=data.product_code,
+                                            model_no=data.model_n,description =data.description ,mrp=data.mrp, 
+                                            base_price=data.base_price, gst=data.gst,offer_price=data.offer_price)
+            return pro_obj
+
+
+
+@app.get('/All_Product_Data/')
+async def all_product_data():
+    prod_obj=await Product.all()
+    return prod_obj
+
+@app.delete('/Product_Delete/')
+async def delete_product(data:Info):
+    prod_obj=await Product.filter(id=data.id).delete()
+    return {'message':'Product Deleted Successfully'}
+
+@app.put('/Update_Product/')
+async def Update_Product(data:UpdateProduct=Depends(),product_image:UploadFile=File(...)):
+
+    pro_obj=await Product.get(id=data.id)
+    if not pro_obj:
+        return {"status": False, "message": "Product not added"}
+    else:
+        pro_obj=await Product.filter(id=data.id).update(name=data.name,manufacturer_sku=data.manufacturer_sku,
+                                                        product_code=data.product_code,model_no=data.model_no,
+                                                        description =data.description,mrp=data.mrp,base_price=data.base_price,
+                                                        gst=data.gst,offer_price=data.offer_price)
+        return pro_obj
